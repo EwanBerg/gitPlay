@@ -1,0 +1,215 @@
+<!DOCTYPE doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+            <title>
+                Wallpaper - GreenMatrix
+            </title>
+            <meta content="cybeerboy" name="author">
+                <style type="text/css">
+                    * {
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			background: #000;
+			overflow: hidden;
+			}
+		canvas {
+			display: block;
+			}
+                </style>
+                <!--[if lt IE 9]>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+	<![endif]-->
+            </meta>
+        </meta>
+    </head>
+    <body>
+        <canvas id="greenmatrix">
+        </canvas>
+        <script type="text/javascript">
+            var MatrixChars = false;
+		var fps;
+		var fpsInterval;
+		var mcolor = '#00f';
+
+		var startTime, now, then, elapsed;
+		var font_size = 10;
+		var c = document.getElementById("greenmatrix");
+		var ctx = c.getContext("2d");
+		ctx.font = font_size + "px arial";	
+		
+		c.height = window.innerHeight;
+		c.width = window.innerWidth;
+		
+		var letters = "1234567890#ABCDEFGHIJKLMNOPQRSTUVWXYZ";		
+		letters = letters.split('');
+		
+		var columns = c.width/font_size;
+		var drops = [];
+		for(var x = 0; x < columns; x++)  
+		{
+			drops[x] = 1; 
+		}
+
+		window.onload = function () {
+			window.wallpaperPropertyListener = {
+			    applyUserProperties: function(properties) 
+			    {					
+		            if (properties.custombool.value) 
+		            {
+		                window.MatrixChars = true;
+		                window.fps = properties.customint.value;
+		            } 
+		            else 
+		            {
+		                window.MatrixChars = false;
+		                window.fps = properties.customint.value;
+		            }
+
+		            if(properties.customcombo.value == 1) {
+		            	window.mcolor = '#05f';
+		            }
+
+		            if(properties.customcombo.value == 2) {
+		            	window.mcolor = '#e60000';	
+		            }
+
+		            if(properties.customcombo.value == 3) {
+		            	window.mcolor = '#1919ff';	
+		            }
+
+		            if(properties.customcombo.value == 4) {
+		            	window.mcolor = '#ffffff';	
+		            }	
+
+
+		            startAnimating();
+			    }
+			};
+
+			var json = {"custombool" : 
+						{
+							"text" : "Different Matrix Characters",
+							"type" : "bool",
+							"value" : false
+						},
+						"customcombo" : 
+						{
+							"options" : 
+							[
+								{
+									"label" : "Green",
+									"value" : 1
+								},
+								{
+									"label" : "Red",
+									"value" : 2
+								},
+								{
+									"label" : "Blue",
+									"value" : 3
+								},
+								{
+									"label" : "White",
+									"value" : 4
+								}
+							],
+							"text" : "Matrix Color",
+							"type" : "combo",
+							"value" : 1
+						},
+						"customint" : 
+						{
+							"max" : 60,
+							"min" : 10,
+							"text" : "Matrix Speed",
+							"type" : "slider",
+							"value" : 25
+						},
+						"schemecolor" : 
+						{
+							"order" : 0,
+							"text" : "Windows Color",
+							"type" : "color",
+							"value" : "46 46 46"
+						}
+		};
+		window.wallpaperPropertyListener.applyUserProperties(json);
+
+		};
+
+
+		window.addEventListener('resize', function()
+		{
+			c.height = window.innerHeight;
+			c.width = window.innerWidth;
+			columns = c.width/font_size;
+			drops = [];
+			for(var x = 0; x < columns; x++)
+				drops[x] = 1;
+		}, false );
+
+
+		function drawmatrix()
+		{
+			ctx.fillStyle = "rgba(0, 0, 0, 0.05)";	
+			ctx.fillRect(0, 0, c.width, c.height);
+			ctx.fillStyle = mcolor;	
+								
+			for(var i = 0; i < drops.length; i++)
+			{
+				var text = letters[Math.floor(Math.random()*letters.length)];
+				ctx.fillText(text, i*font_size, drops[i]*font_size);
+				if(drops[i]*font_size > c.height && Math.random() > 0.975)
+					drops[i] = 0;
+				
+				drops[i]++;
+			}
+		}
+
+	
+		function loop()
+		{	
+			if(MatrixChars)
+			{
+                window.letters = generateChars();
+			} 
+			else 
+			{
+				window.letters = "1234567890#ABCDEFGHIJKLMNOPQRSTUVWXYZ";		
+				letters = letters.split('');
+			}
+
+		    window.requestAnimationFrame(loop);
+	        now = Date.now();
+			elapsed = now - then;
+		    if (elapsed > fpsInterval) 
+		    {
+		        then = now - (elapsed % fpsInterval);
+		        drawmatrix();	
+		    }			
+		}
+		
+		function startAnimating() 
+		{		    
+		    fpsInterval = 1000 / fps;
+		    then = Date.now();
+		    startTime = then;
+		    loop();
+		}
+
+		function generateChars() 
+		{
+		  var chars = '0123456789';
+		  for (var i = 0; i <= 55; i++) 
+		  {
+		    chars += String.fromCharCode(i + 65382);
+		  }
+		  
+		  return chars.split('');
+		}
+        </script>
+    </body>
+</html>
